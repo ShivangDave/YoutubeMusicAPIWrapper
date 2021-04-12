@@ -15,7 +15,7 @@ for i in playlists:
 playlist = ytmusic.get_playlist(playlist_ids[2])
 # print(playlist)
 
-new_playlist = ytmusic.create_playlist('Test','25 songs test')
+new_playlist = ytmusic.create_playlist('Imported Songs','Youtube API Test!!')
 
 filename = "songs.csv"
 rows = []
@@ -31,24 +31,33 @@ with open(filename, 'r') as csvfile:
     for row in csvreader:
         rows.append(row[0])
 
-print(rows[:25])
-
 failed = []
+file = open("failed_songs.txt","w")
+count = 0
 
-for i in rows[:25]:
-    time.sleep(1)
-    print("sleeping")
+
+for i in rows:
+    count+=1
+    print(count)
+    # time.sleep(0.5)
+    # print("sleeping")
     song_result = ytmusic.search(i,'songs')
 
-    print(len(song_result))
+    # print(len(song_result))
     if len(song_result) > 0:
         if i != song_result[0]['title']:
             video_result = ytmusic.search(i,'videos')
-            print(video_result[0]['videoId'])
-            ytmusic.add_playlist_items(new_playlist,[video_result[0]['videoId']])
+            if len(video_result) > 0:
+                # print(video_result[0]['videoId'])
+                ytmusic.add_playlist_items(new_playlist,[video_result[0]['videoId']])
+            else:
+                print("Failed Plus ONEEEEE")
+                file.write(i + ' \n')
         else:
-            print(song_result[0]['videoId'])
+            # print(song_result[0]['videoId'])
             ytmusic.add_playlist_items(new_playlist,[song_result[0]['videoId']])
     else:
-        failed.append(i)
-        print('This song ' + i + ' failed')
+        print("Failed Plus ONEEEEE")
+        file.write(i + ' \n')
+
+file.close()
